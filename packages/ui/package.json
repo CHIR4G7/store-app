@@ -1,0 +1,11 @@
+{
+  "name": "@grocery/ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.tsx",
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "react": "^19.1.0"
+  }
+}

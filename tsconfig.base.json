@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@grocery/ui": ["packages/ui/src/index.tsx"],
+      "@grocery/products": ["packages/products/src/index.ts"],
+      "@grocery/shared-utils": ["packages/shared-utils/src/index.ts"],
+      "@grocery/constants": ["packages/constants/src/index.ts"],
+      "@grocery/auth": ["packages/auth/src/index.ts"],
+      "@grocery/orders": ["packages/orders/src/index.ts"],
+      "@grocery/validation": ["packages/validation/src/index.ts"],
+      "@grocery/inventory": ["packages/inventory/src/index.ts"],
+      "@grocery/database-types": ["packages/database-types/src/index.ts"]
+    }
+  }
+}
