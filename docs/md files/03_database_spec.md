@@ -61,7 +61,8 @@ products
 
 orders
 │
-└── order_items
+├── order_items
+└── order_status_history
 
 delivery_zones
 
@@ -221,6 +222,25 @@ Unique Constraint:
 
 ---
 
+### 4.11 order_status_history
+
+| Column | Type | Constraints |
+|----------|----------|----------|
+| id | UUID | PK |
+| order_id | UUID | FK orders |
+| actor_id | UUID | FK profiles |
+| old_status | TEXT | |
+| new_status | TEXT | NOT NULL |
+| note | TEXT | |
+| created_at | TIMESTAMPTZ | NOT NULL |
+
+Purpose:
+- Records every order status transition.
+- Supports customer and worker order timelines.
+- Provides an audit trail for lifecycle actions such as order placement, acceptance, packing, delivery, pickup, and cancellation.
+
+---
+
 ## 5. Index Strategy
 
 Products:
@@ -233,6 +253,9 @@ Orders:
 - idx_orders_worker
 - idx_orders_status
 - idx_orders_created_at
+
+Order Status History:
+- idx_order_status_history_order
 
 Cart:
 - idx_cart_user
@@ -259,15 +282,16 @@ Fulfillment Types:
 - pickup
 
 Order Status:
-- placed
-- confirmed
-- packing
-- packed
-- out_for_delivery
-- ready_for_pickup
-- delivered
-- collected
-- cancelled
+- PLACED
+- CONFIRMED
+- ASSIGNED
+- PACKING
+- PACKED
+- OUT_FOR_DELIVERY
+- READY_FOR_PICKUP
+- DELIVERED
+- COLLECTED
+- CANCELLED
 
 ---
 

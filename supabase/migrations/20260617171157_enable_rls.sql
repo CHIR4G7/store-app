@@ -1,0 +1,11 @@
+alter table public.profiles enable row level security;
+alter table public.addresses enable row level security;
+alter table public.categories enable row level security;
+alter table public.products enable row level security;
+alter table public.cart_items enable row level security;
+alter table public.orders enable row level security;
+alter table public.order_items enable row level security;
+alter table public.delivery_zones enable row level security;
+alter table public.notification_tokens enable row level security;
+alter table public.audit_logs enable row level security;
+alter table public.order_status_history enable row level security;

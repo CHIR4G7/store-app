@@ -13,6 +13,7 @@ export function ShopPage() {
   const { user } = useCurrentUser();
   const categoriesQuery = useCategories();
   const productsQuery = useProducts({ search, categoryId: selectedCategory });
+  const customerName = user?.fullName ?? "there";
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -25,7 +26,7 @@ export function ShopPage() {
       <header className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-base text-slate-600">{greeting}, {user.fullName}</p>
+            <p className="text-base text-slate-600">{greeting}, {customerName}</p>
             <h1 className="mt-1 text-3xl font-bold leading-tight text-slate-950">Shop groceries</h1>
           </div>
           <Badge tone="success">

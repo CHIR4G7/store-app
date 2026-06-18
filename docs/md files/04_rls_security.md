@@ -525,6 +525,57 @@ Audit history must remain immutable.
 
 -------------------------------------------------
 
+=================================================
+TABLE: order_status_history
+=================================================
+
+SELECT
+
+Customer:
+Can read status history for own orders.
+
+Worker:
+Can read status history for assigned orders.
+
+Admin:
+Can read all status history rows.
+
+Policy:
+
+Order belongs to customer
+OR order is assigned to worker
+OR user is admin
+
+---
+
+INSERT
+
+System only.
+
+Created by trusted Edge Functions such as:
+
+- place-order
+- accept-order
+- update-order-status
+
+---
+
+UPDATE
+
+Disabled.
+
+Status history is append-only.
+
+---
+
+DELETE
+
+Disabled.
+
+Order lifecycle history must remain immutable.
+
+-------------------------------------------------
+
 # 8. Service Role Security
 
 Supabase Service Role:
