@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@grocery/auth": "*",
+    "@grocery/orders": "*",
     "@grocery/products": "*",
     "@grocery/shared-utils": "*",
     "@grocery/ui": "*",

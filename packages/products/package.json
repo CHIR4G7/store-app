@@ -5,6 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "dependencies": {
+    "@grocery/auth": "*",
     "@tanstack/react-query": "^5.80.0"
   }
 }

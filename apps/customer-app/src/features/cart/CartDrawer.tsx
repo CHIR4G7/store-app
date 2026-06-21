@@ -3,7 +3,15 @@ import { formatCurrency, pluralize } from "@grocery/shared-utils";
 import { Minus, Plus, Trash2, X } from "lucide-react";
 import { useCartStore, useCartTotals } from "../../stores/cartStore";
 
-export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function CartDrawer({
+  isOpen,
+  onCheckout,
+  onClose
+}: {
+  isOpen: boolean;
+  onCheckout: () => void;
+  onClose: () => void;
+}) {
   const items = useCartStore((state) => state.items);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
@@ -70,7 +78,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
               <span className="font-semibold">{formatCurrency(totals.savings)}</span>
             </div>
           </div>
-          <Button className="mt-4 w-full" disabled={items.length === 0}>
+          <Button className="mt-4 w-full" disabled={items.length === 0} onClick={onCheckout}>
             Continue to checkout
           </Button>
         </div>

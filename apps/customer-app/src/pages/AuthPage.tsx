@@ -71,27 +71,10 @@ export function AuthPage() {
               <ShieldCheck aria-hidden size={28} />
             </div>
             <div>
-              <p className="text-base font-semibold text-emerald-700">Fresh groceries, verified checkout</p>
+              <p className="text-base font-semibold text-emerald-700">Welcome to Manmohan Di Hatti Online App</p>
               <h1 className="mt-3 max-w-2xl text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
                 Sign in with your mobile number
               </h1>
-              <p className="mt-4 max-w-xl text-lg leading-8 text-slate-600">
-                Use OTP login to shop, save addresses, and track orders from your local store.
-              </p>
-            </div>
-            <div className="grid gap-3 text-base text-slate-700 sm:grid-cols-3">
-              <div className="rounded-lg border border-slate-200 bg-white p-4">
-                <CheckCircle2 className="text-emerald-600" aria-hidden size={22} />
-                <p className="mt-3 font-semibold">No password</p>
-              </div>
-              <div className="rounded-lg border border-slate-200 bg-white p-4">
-                <CheckCircle2 className="text-emerald-600" aria-hidden size={22} />
-                <p className="mt-3 font-semibold">Saved cart</p>
-              </div>
-              <div className="rounded-lg border border-slate-200 bg-white p-4">
-                <CheckCircle2 className="text-emerald-600" aria-hidden size={22} />
-                <p className="mt-3 font-semibold">Order updates</p>
-              </div>
             </div>
           </div>
 

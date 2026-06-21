@@ -57,7 +57,7 @@ export function useCartTotals() {
   const items = useCartStore((state) => state.items);
 
   return useMemo(() => {
-    const itemCount = items.reduce((total, item) => total + item.quantity, 0);
+    const itemCount = items.length;
     const subtotal = items.reduce((total, item) => total + item.product.price * item.quantity, 0);
     const mrpTotal = items.reduce((total, item) => total + item.product.mrp * item.quantity, 0);
 

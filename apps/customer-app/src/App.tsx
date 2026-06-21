@@ -1,14 +1,19 @@
 import { useState } from "react";
 import { CartDrawer } from "./features/cart/CartDrawer";
 import { CartSummaryBar } from "./features/cart/CartSummaryBar";
-import { BottomNav } from "./components/BottomNav";
+import { BottomNav, type CustomerTab } from "./components/BottomNav";
 import { ShopPage } from "./pages/ShopPage";
 import { AuthPage } from "./pages/AuthPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { useCurrentUser } from "@grocery/auth";
+import { OrdersPage } from "./pages/OrdersPage";
+import { CheckoutPage } from "./pages/CheckoutPage";
+import { ProfilePage } from "./pages/ProfilePage";
 
 export function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<CustomerTab>("home");
   const { isAuthenticated, isLoading, needsOnboarding, refreshProfile, user } = useCurrentUser();
 
   if (isLoading) {
@@ -35,10 +40,31 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <ShopPage />
-      <CartSummaryBar onOpenCart={() => setIsCartOpen(true)} />
-      <BottomNav onCartClick={() => setIsCartOpen(true)} />
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {isCheckoutOpen ? (
+        <CheckoutPage
+          onBack={() => setIsCheckoutOpen(false)}
+          onOrderPlaced={() => {
+            setIsCheckoutOpen(false);
+            setActiveTab("orders");
+          }}
+        />
+      ) : activeTab === "orders" ? (
+        <OrdersPage />
+      ) : activeTab === "profile" ? (
+        <ProfilePage />
+      ) : (
+        <ShopPage />
+      )}
+      {!isCheckoutOpen ? <CartSummaryBar onOpenCart={() => setIsCartOpen(true)} /> : null}
+      {!isCheckoutOpen ? <BottomNav activeTab={activeTab} onCartClick={() => setIsCartOpen(true)} onNavigate={setActiveTab} /> : null}
+      <CartDrawer
+        isOpen={isCartOpen}
+        onCheckout={() => {
+          setIsCartOpen(false);
+          setIsCheckoutOpen(true);
+        }}
+        onClose={() => setIsCartOpen(false)}
+      />
     </div>
   );
 }

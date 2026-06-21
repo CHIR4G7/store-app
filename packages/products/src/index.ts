@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@grocery/auth";
 
 export type Category = {
   id: string;
@@ -8,8 +9,8 @@ export type Category = {
 
 export type Product = {
   id: string;
-  categoryId: string;
-  sku: string;
+  categoryId: string | null;
+  sku: string | null;
   name: string;
   description: string;
   price: number;
@@ -20,145 +21,75 @@ export type Product = {
   isAvailable: boolean;
 };
 
-export const categories: Category[] = [
-  { id: "fresh", name: "Fresh", sortOrder: 1 },
-  { id: "dairy", name: "Dairy", sortOrder: 2 },
-  { id: "staples", name: "Staples", sortOrder: 3 },
-  { id: "snacks", name: "Snacks", sortOrder: 4 },
-  { id: "household", name: "Household", sortOrder: 5 }
-];
-
-export const products: Product[] = [
-  {
-    id: "tomatoes",
-    categoryId: "fresh",
-    sku: "FRESH-TOM-001",
-    name: "Fresh Tomatoes",
-    description: "Firm red tomatoes for curries, salads, and chutneys.",
-    price: 42,
-    mrp: 52,
-    stock: 120,
-    unit: "1 kg",
-    imageUrl: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  },
-  {
-    id: "bananas",
-    categoryId: "fresh",
-    sku: "FRESH-BAN-001",
-    name: "Robusta Bananas",
-    description: "Naturally ripened bananas, great for daily breakfast.",
-    price: 58,
-    mrp: 68,
-    stock: 80,
-    unit: "1 dozen",
-    imageUrl: "https://images.unsplash.com/photo-1603833665858-e61d17a86224?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  },
-  {
-    id: "milk",
-    categoryId: "dairy",
-    sku: "DAIRY-MILK-500",
-    name: "Toned Milk",
-    description: "Fresh daily milk pouch.",
-    price: 32,
-    mrp: 34,
-    stock: 64,
-    unit: "500 ml",
-    imageUrl: "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  },
-  {
-    id: "paneer",
-    categoryId: "dairy",
-    sku: "DAIRY-PAN-200",
-    name: "Fresh Paneer",
-    description: "Soft paneer block for snacks and main dishes.",
-    price: 92,
-    mrp: 110,
-    stock: 28,
-    unit: "200 g",
-    imageUrl: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  },
-  {
-    id: "atta",
-    categoryId: "staples",
-    sku: "STAP-ATTA-5K",
-    name: "Whole Wheat Atta",
-    description: "Stone-ground wheat flour for soft rotis.",
-    price: 248,
-    mrp: 285,
-    stock: 45,
-    unit: "5 kg",
-    imageUrl: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  },
-  {
-    id: "basmati",
-    categoryId: "staples",
-    sku: "STAP-RICE-5K",
-    name: "Basmati Rice",
-    description: "Long grain rice for everyday meals and biryani.",
-    price: 620,
-    mrp: 699,
-    stock: 22,
-    unit: "5 kg",
-    imageUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  },
-  {
-    id: "chips",
-    categoryId: "snacks",
-    sku: "SNACK-CHIP-001",
-    name: "Classic Salted Chips",
-    description: "Crisp potato chips for tea-time snacking.",
-    price: 20,
-    mrp: 20,
-    stock: 150,
-    unit: "52 g",
-    imageUrl: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  },
-  {
-    id: "detergent",
-    categoryId: "household",
-    sku: "HOME-DET-1K",
-    name: "Laundry Detergent",
-    description: "Daily-use detergent powder for machine and bucket wash.",
-    price: 178,
-    mrp: 210,
-    stock: 36,
-    unit: "1 kg",
-    imageUrl: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=600&q=80",
-    isAvailable: true
-  }
-];
-
 type ProductFilters = {
   search?: string;
   categoryId?: string;
 };
 
-function filterProducts(filters: ProductFilters) {
-  const search = filters.search?.trim().toLowerCase();
+type CategoryRow = {
+  id: string;
+  name: string;
+  sort_order: number | null;
+};
 
-  return products.filter((product) => {
-    const categoryMatches = !filters.categoryId || product.categoryId === filters.categoryId;
-    const searchMatches =
-      !search ||
-      product.name.toLowerCase().includes(search) ||
-      product.description.toLowerCase().includes(search) ||
-      product.sku.toLowerCase().includes(search);
+type ProductRow = {
+  id: string;
+  category_id: string | null;
+  sku: string | null;
+  name: string;
+  description: string | null;
+  price: number | string;
+  stock: number | null;
+  image_url: string | null;
+  is_available: boolean | null;
+};
 
-    return product.isAvailable && categoryMatches && searchMatches;
-  });
+function toNumber(value: number | string | null | undefined) {
+  return typeof value === "number" ? value : Number(value ?? 0);
+}
+
+function mapCategory(row: CategoryRow): Category {
+  return {
+    id: row.id,
+    name: row.name,
+    sortOrder: row.sort_order ?? 0
+  };
+}
+
+function mapProduct(row: ProductRow): Product {
+  const price = toNumber(row.price);
+
+  return {
+    id: row.id,
+    categoryId: row.category_id,
+    sku: row.sku,
+    name: row.name,
+    description: row.description ?? "",
+    price,
+    mrp: price,
+    stock: row.stock ?? 0,
+    unit: row.sku ?? "item",
+    imageUrl:
+      row.image_url ??
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80",
+    isAvailable: row.is_available ?? true
+  };
 }
 
 export function useCategories() {
   return useQuery({
     queryKey: ["categories"],
-    queryFn: async () => categories,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id, name, sort_order")
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+
+      return ((data ?? []) as CategoryRow[]).map(mapCategory);
+    },
     staleTime: 30 * 60 * 1000
   });
 }
@@ -166,7 +97,30 @@ export function useCategories() {
 export function useProducts(filters: ProductFilters = {}) {
   return useQuery({
     queryKey: ["products", filters.search ?? "", filters.categoryId ?? ""],
-    queryFn: async () => filterProducts(filters),
+    queryFn: async () => {
+      let query = supabase
+        .from("products")
+        .select("id, category_id, sku, name, description, price, stock, image_url, is_available")
+        .eq("is_available", true)
+        .order("name", { ascending: true });
+
+      if (filters.categoryId) {
+        query = query.eq("category_id", filters.categoryId);
+      }
+
+      const search = filters.search?.trim();
+
+      if (search) {
+        const escapedSearch = search.replaceAll("%", "\\%").replaceAll("_", "\\_");
+        query = query.or(`name.ilike.%${escapedSearch}%,description.ilike.%${escapedSearch}%,sku.ilike.%${escapedSearch}%`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      return ((data ?? []) as ProductRow[]).map(mapProduct);
+    },
     staleTime: 5 * 60 * 1000
   });
 }
@@ -174,7 +128,17 @@ export function useProducts(filters: ProductFilters = {}) {
 export function useProduct(productId: string) {
   return useQuery({
     queryKey: ["product", productId],
-    queryFn: async () => products.find((product) => product.id === productId) ?? null,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, category_id, sku, name, description, price, stock, image_url, is_available")
+        .eq("id", productId)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      return data ? mapProduct(data as ProductRow) : null;
+    },
     staleTime: 5 * 60 * 1000
   });
 }
