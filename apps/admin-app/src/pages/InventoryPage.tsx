@@ -117,7 +117,7 @@ function ProductCreateForm({ categories }: { categories: Category[] }) {
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage.from("images").getPublicUrl(filePath);
+      const { data } = supabase.storage.from("product-images").getPublicUrl(filePath);
 
       setForm((current) => ({ ...current, imageUrl: data.publicUrl }));
       setUploadedImageName(file.name);
