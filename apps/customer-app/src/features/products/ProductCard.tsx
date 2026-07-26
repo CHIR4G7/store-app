@@ -18,7 +18,7 @@ export function ProductCard({ product }: { product: Product }) {
             <h3 className="text-base font-semibold leading-snug text-slate-950">{product.name}</h3>
             {product.stock < 30 ? <Badge tone="warning">Low</Badge> : null}
           </div>
-          <p className="mt-1 text-sm text-slate-500">{product.unit}</p>
+          <p className="mt-1 text-sm text-slate-500">{product.weight}</p>
         </div>
         <div className="flex items-end justify-between gap-2">
           <div>

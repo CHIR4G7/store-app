@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@grocery/auth": "*",
+    "@grocery/orders": "*",
     "@grocery/shared-utils": "*",
     "@grocery/ui": "*",
     "@tanstack/react-query": "^5.80.0",

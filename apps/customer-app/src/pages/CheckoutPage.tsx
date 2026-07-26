@@ -192,7 +192,7 @@ export function CheckoutPage({ onBack, onOrderPlaced }: CheckoutPageProps) {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="font-semibold text-slate-950">{item.product.name}</h3>
-                        <p className="text-sm text-slate-500">{item.product.unit}</p>
+                        <p className="text-sm text-slate-500">{item.product.weight}</p>
                       </div>
                       <p className="font-bold text-slate-950">{formatCurrency(item.product.price * item.quantity)}</p>
                     </div>

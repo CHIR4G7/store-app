@@ -44,7 +44,7 @@ export function CartDrawer({
                   <img src={item.product.imageUrl} alt="" className="h-20 w-20 rounded-lg object-cover" />
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold text-slate-950">{item.product.name}</h3>
-                    <p className="text-sm text-slate-500">{item.product.unit}</p>
+                    <p className="text-sm text-slate-500">{item.product.weight}</p>
                     <p className="mt-1 font-bold text-slate-950">{formatCurrency(item.product.price * item.quantity)}</p>
                     <div className="mt-2 flex items-center justify-between gap-2">
                       <div className="flex items-center rounded-lg border border-slate-300">

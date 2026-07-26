@@ -16,7 +16,7 @@ export type Product = {
   price: number;
   mrp: number;
   stock: number;
-  unit: string;
+  weight: string;
   imageUrl: string;
   isAvailable: boolean;
 };
@@ -42,6 +42,7 @@ type ProductRow = {
   stock: number | null;
   image_url: string | null;
   is_available: boolean | null;
+  weight: string | null;
 };
 
 function toNumber(value: number | string | null | undefined) {
@@ -68,7 +69,7 @@ function mapProduct(row: ProductRow): Product {
     price,
     mrp: price,
     stock: row.stock ?? 0,
-    unit: row.sku ?? "item",
+    weight: row.weight ?? "",
     imageUrl:
       row.image_url ??
       "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80",
@@ -100,7 +101,7 @@ export function useProducts(filters: ProductFilters = {}) {
     queryFn: async () => {
       let query = supabase
         .from("products")
-        .select("id, category_id, sku, name, description, price, stock, image_url, is_available")
+        .select("id, category_id, sku, name, description, price, stock, image_url, is_available, weight")
         .eq("is_available", true)
         .order("name", { ascending: true });
 
@@ -131,7 +132,7 @@ export function useProduct(productId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, category_id, sku, name, description, price, stock, image_url, is_available")
+        .select("id, category_id, sku, name, description, price, stock, image_url, is_available, weight")
         .eq("id", productId)
         .maybeSingle();
 

@@ -414,6 +414,7 @@ export type Database = {
           sku: string | null
           stock: number
           updated_at: string
+          weight: string | null
         }
         Insert: {
           category_id?: string | null
@@ -427,6 +428,7 @@ export type Database = {
           sku?: string | null
           stock?: number
           updated_at?: string
+          weight?: string | null
         }
         Update: {
           category_id?: string | null
@@ -440,6 +442,7 @@ export type Database = {
           sku?: string | null
           stock?: number
           updated_at?: string
+          weight?: string | null
         }
         Relationships: [
           {
