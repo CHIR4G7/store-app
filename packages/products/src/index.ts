@@ -10,7 +10,6 @@ export type Category = {
 export type Product = {
   id: string;
   categoryId: string | null;
-  sku: string | null;
   name: string;
   description: string;
   price: number;
@@ -35,10 +34,10 @@ type CategoryRow = {
 type ProductRow = {
   id: string;
   category_id: string | null;
-  sku: string | null;
   name: string;
   description: string | null;
   price: number | string;
+  mrp: number | string | null;
   stock: number | null;
   image_url: string | null;
   is_available: boolean | null;
@@ -63,11 +62,10 @@ function mapProduct(row: ProductRow): Product {
   return {
     id: row.id,
     categoryId: row.category_id,
-    sku: row.sku,
     name: row.name,
     description: row.description ?? "",
     price,
-    mrp: price,
+    mrp: row.mrp != null ? toNumber(row.mrp) : price,
     stock: row.stock ?? 0,
     weight: row.weight ?? "",
     imageUrl:
@@ -101,7 +99,7 @@ export function useProducts(filters: ProductFilters = {}) {
     queryFn: async () => {
       let query = supabase
         .from("products")
-        .select("id, category_id, sku, name, description, price, stock, image_url, is_available, weight")
+        .select("id, category_id, name, description, price, mrp, stock, image_url, is_available, weight")
         .eq("is_available", true)
         .order("name", { ascending: true });
 
@@ -113,7 +111,7 @@ export function useProducts(filters: ProductFilters = {}) {
 
       if (search) {
         const escapedSearch = search.replaceAll("%", "\\%").replaceAll("_", "\\_");
-        query = query.or(`name.ilike.%${escapedSearch}%,description.ilike.%${escapedSearch}%,sku.ilike.%${escapedSearch}%`);
+        query = query.or(`name.ilike.%${escapedSearch}%,description.ilike.%${escapedSearch}%`);
       }
 
       const { data, error } = await query;
@@ -132,7 +130,7 @@ export function useProduct(productId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, category_id, sku, name, description, price, stock, image_url, is_available, weight")
+        .select("id, category_id, name, description, price, mrp, stock, image_url, is_available, weight")
         .eq("id", productId)
         .maybeSingle();
 

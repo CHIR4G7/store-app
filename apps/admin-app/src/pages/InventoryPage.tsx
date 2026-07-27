@@ -16,10 +16,10 @@ type Category = {
 type Product = {
   id: string;
   category_id: string | null;
-  sku: string | null;
   name: string;
   description: string | null;
   price: number | string;
+  mrp: number | string | null;
   stock: number | null;
   image_url: string | null;
   is_available: boolean | null;
@@ -31,10 +31,10 @@ type Product = {
 
 type ProductForm = {
   categoryId: string;
-  sku: string;
   name: string;
   description: string;
   price: string;
+  mrp: string;
   stock: string;
   weight: string;
   imageUrl: string;
@@ -59,10 +59,10 @@ async function fetchProducts() {
     .select(`
       id,
       category_id,
-      sku,
       name,
       description,
       price,
+      mrp,
       stock,
       image_url,
       is_available,
@@ -85,10 +85,10 @@ function ProductCreateForm({ categories }: { categories: Category[] }) {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [form, setForm] = useState<ProductForm>({
     categoryId: categories[0]?.id ?? "",
-    sku: "",
     name: "",
     description: "",
     price: "",
+    mrp: "",
     stock: "",
     weight: "",
     imageUrl: "",
@@ -133,17 +133,19 @@ function ProductCreateForm({ categories }: { categories: Category[] }) {
     mutationFn: async () => {
       const price = Number(form.price);
       const stock = Number(form.stock);
+      const mrp = form.mrp.trim() ? Number(form.mrp) : null;
 
       if (!form.name.trim()) throw new Error("Product name is required");
       if (!Number.isFinite(price) || price < 0) throw new Error("Price must be zero or greater");
       if (!Number.isInteger(stock) || stock < 0) throw new Error("Stock must be a whole number zero or greater");
+      if (mrp !== null && (!Number.isFinite(mrp) || mrp < price)) throw new Error("MRP must be zero or greater and at least the price");
 
       const { error } = await supabase.from("products").insert({
         category_id: form.categoryId || null,
-        sku: form.sku.trim() || null,
         name: form.name.trim(),
         description: form.description.trim() || null,
         price,
+        mrp,
         stock,
         image_url: form.imageUrl.trim() || null,
         is_available: form.isAvailable,
@@ -155,10 +157,10 @@ function ProductCreateForm({ categories }: { categories: Category[] }) {
     onSuccess: async () => {
       setForm({
         categoryId: categories[0]?.id ?? "",
-        sku: "",
         name: "",
         description: "",
         price: "",
+        mrp: "",
         stock: "",
         weight: "",
         imageUrl: "",
@@ -207,11 +209,6 @@ function ProductCreateForm({ categories }: { categories: Category[] }) {
           </select>
         </label>
 
-        <label className="block">
-          <span className="mb-1 block text-sm font-semibold text-slate-700">SKU</span>
-          <Input value={form.sku} onChange={(event) => updateField("sku", event.target.value)} placeholder="DAIRY-MILK-500" />
-        </label>
-
         <div className="block">
           <span className="mb-1 block text-sm font-semibold text-slate-700">Product image</span>
           <input
@@ -242,6 +239,18 @@ function ProductCreateForm({ categories }: { categories: Category[] }) {
         <label className="block">
           <span className="mb-1 block text-sm font-semibold text-slate-700">Price</span>
           <Input type="number" min="0" step="0.01" value={form.price} onChange={(event) => updateField("price", event.target.value)} required />
+        </label>
+
+        <label className="block">
+          <span className="mb-1 block text-sm font-semibold text-slate-700">MRP</span>
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            value={form.mrp}
+            onChange={(event) => updateField("mrp", event.target.value)}
+            placeholder="Leave blank if same as price"
+          />
         </label>
 
         <label className="block">
@@ -339,7 +348,7 @@ function ProductTable({ products }: { products: Product[] }) {
     if (!normalizedSearch) return products;
 
     return products.filter((product) =>
-      [product.name, product.sku, product.description, product.categories?.name]
+      [product.name, product.description, product.categories?.name]
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearch))
     );
@@ -362,7 +371,7 @@ function ProductTable({ products }: { products: Product[] }) {
         <EmptyState title="No products found" body="Add a product or adjust the search." />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-slate-200">
-          <table className="w-full min-w-[880px] border-collapse text-left text-base">
+          <table className="w-full min-w-[960px] border-collapse text-left text-base">
             <thead className="bg-slate-100 text-slate-600">
               <tr>
                 <th className="p-3">Product</th>
@@ -370,6 +379,7 @@ function ProductTable({ products }: { products: Product[] }) {
                 <th className="p-3">Weight</th>
                 <th className="p-3">Stock</th>
                 <th className="p-3">Price</th>
+                <th className="p-3">MRP</th>
                 <th className="p-3">Image</th>
                 <th className="p-3">Status</th>
               </tr>
@@ -379,12 +389,19 @@ function ProductTable({ products }: { products: Product[] }) {
                 <tr key={product.id} className="border-t border-slate-200">
                   <td className="p-3">
                     <p className="font-semibold text-slate-950">{product.name}</p>
-                    <p className="text-sm text-slate-500">{product.sku ?? product.id}</p>
+                    <p className="text-sm text-slate-500">{product.id}</p>
                   </td>
                   <td className="p-3">{product.categories?.name ?? "No category"}</td>
                   <td className="p-3">{product.weight || "—"}</td>
                   <td className="p-3">{product.stock ?? 0}</td>
                   <td className="p-3">{formatCurrency(toNumber(product.price))}</td>
+                  <td className="p-3">
+                    {product.mrp != null && toNumber(product.mrp) > toNumber(product.price) ? (
+                      <span className="text-slate-500 line-through">{formatCurrency(toNumber(product.mrp))}</span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="p-3">
                     {product.image_url ? (
                       <img src={product.image_url} alt="" className="h-12 w-12 rounded-lg object-cover" />

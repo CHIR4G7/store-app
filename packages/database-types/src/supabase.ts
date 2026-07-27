@@ -409,9 +409,9 @@ export type Database = {
           id: string
           image_url: string | null
           is_available: boolean
+          mrp: number | null
           name: string
           price: number
-          sku: string | null
           stock: number
           updated_at: string
           weight: string | null
@@ -423,9 +423,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_available?: boolean
+          mrp?: number | null
           name: string
           price: number
-          sku?: string | null
           stock?: number
           updated_at?: string
           weight?: string | null
@@ -437,9 +437,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_available?: boolean
+          mrp?: number | null
           name?: string
           price?: number
-          sku?: string | null
           stock?: number
           updated_at?: string
           weight?: string | null
